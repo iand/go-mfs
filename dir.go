@@ -17,9 +17,11 @@ import (
 	ipld "github.com/ipfs/go-ipld-format"
 )
 
-var ErrNotYetImplemented = errors.New("not yet implemented")
-var ErrInvalidChild = errors.New("invalid child node")
-var ErrDirExists = errors.New("directory already has entry by that name")
+var (
+	ErrNotYetImplemented = errors.New("not yet implemented")
+	ErrInvalidChild      = errors.New("invalid child node")
+	ErrDirExists         = errors.New("directory already has entry by that name")
+)
 
 // TODO: There's too much functionality associated with this structure,
 // let's organize it (and if possible extract part of it elsewhere)
@@ -372,7 +374,7 @@ func (d *Directory) AddChild(name string, nd ipld.Node) error {
 // addUnixFSChild adds a child to the inner UnixFS directory
 // and transitions to a HAMT implementation if needed.
 func (d *Directory) addUnixFSChild(c child) error {
-	if uio.UseHAMTSharding {
+	if uio.HAMTShardingSize > 0 {
 		// If the directory HAMT implementation is being used and this
 		// directory is actually a basic implementation switch it to HAMT.
 		if basicDir, ok := d.unixfsDir.(*uio.BasicDirectory); ok {
