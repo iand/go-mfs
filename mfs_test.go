@@ -37,19 +37,19 @@ func emptyDirNode() *dag.ProtoNode {
 	return dag.NodeWithData(ft.FolderPBData())
 }
 
-func getDagserv(t *testing.T) ipld.DAGService {
+func getDagserv(t testing.TB) ipld.DAGService {
 	db := dssync.MutexWrap(ds.NewMapDatastore())
 	bs := bstore.NewBlockstore(db)
 	blockserv := bserv.New(bs, offline.Exchange(bs))
 	return dag.NewDAGService(blockserv)
 }
 
-func getRandFile(t *testing.T, ds ipld.DAGService, size int64) ipld.Node {
+func getRandFile(t testing.TB, ds ipld.DAGService, size int64) ipld.Node {
 	r := io.LimitReader(u.NewTimeSeededRand(), size)
 	return fileNodeFromReader(t, ds, r)
 }
 
-func fileNodeFromReader(t *testing.T, ds ipld.DAGService, r io.Reader) ipld.Node {
+func fileNodeFromReader(t testing.TB, ds ipld.DAGService, r io.Reader) ipld.Node {
 	nd, err := importer.BuildDagFromReader(ds, chunker.DefaultSplitter(r))
 	if err != nil {
 		t.Fatal(err)
@@ -57,7 +57,7 @@ func fileNodeFromReader(t *testing.T, ds ipld.DAGService, r io.Reader) ipld.Node
 	return nd
 }
 
-func mkdirP(t *testing.T, root *Directory, pth string) *Directory {
+func mkdirP(t testing.TB, root *Directory, pth string) *Directory {
 	dirs := path.SplitList(pth)
 	cur := root
 	for _, d := range dirs {
@@ -202,7 +202,7 @@ func catNode(ds ipld.DAGService, nd *dag.ProtoNode) ([]byte, error) {
 	return ioutil.ReadAll(r)
 }
 
-func setupRoot(ctx context.Context, t *testing.T) (ipld.DAGService, *Root) {
+func setupRoot(ctx context.Context, t testing.TB) (ipld.DAGService, *Root) {
 	ds := getDagserv(t)
 
 	root := emptyDirNode()
@@ -210,7 +210,6 @@ func setupRoot(ctx context.Context, t *testing.T) (ipld.DAGService, *Root) {
 		fmt.Println("PUBLISHED: ", c)
 		return nil
 	})
-
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -643,7 +642,6 @@ func TestMfsDirListNames(t *testing.T) {
 	}
 
 	list, err := rootdir.ListNames(ctx)
-
 	if err != nil {
 		t.Fatal(err)
 	}
